@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>HealBotics – Voice AI für Praxen</title>
+  <title>Kontakt – HealBotics</title>
   <link rel="stylesheet" href="assets/style.css" />
 </head>
 <body>
-  <header><h1>HealBotics</h1></header>
+  <header><h1>Kontakt</h1></header>
   <nav>
     <a href="index.html">Start</a>
     <a href="about.html">Über uns</a>
@@ -15,8 +15,12 @@
     <a href="contact.html">Kontakt</a>
   </nav>
   <main>
-    <h2>Willkommen bei HealBotics</h2>
-    <p>Die smarte KI-Empfangsdame für moderne Arztpraxen.</p>
+    <form action="mailto:kontakt@healbotics.de" method="post" enctype="text/plain">
+      <label>Name:<br><input type="text" name="name"></label><br>
+      <label>E-Mail:<br><input type="email" name="email"></label><br>
+      <label>Nachricht:<br><textarea name="message"></textarea></label><br>
+      <button type="submit">Absenden</button>
+    </form>
   </main>
   <footer>&copy; 2025 HealBotics</footer>
 </body>
