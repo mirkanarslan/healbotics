@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HealBotics – 3D KI-Video Studio</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app">
+
+    <!-- ── Header ── -->
+    <header class="header">
+      <div class="header-inner">
+        <div class="brand">
+          <svg class="brand-icon" viewBox="0 0 40 40" fill="none">
+            <polygon points="20,2 38,12 38,28 20,38 2,28 2,12" stroke="#0074D9" stroke-width="2" fill="rgba(0,116,217,0.1)"/>
+            <path d="M14 20 h5 v-5 h2 v5 h5 v2 h-5 v5 h-2 v-5 h-5 z" fill="#0074D9"/>
+          </svg>
+          <span class="brand-name">HealBotics</span>
+          <span class="brand-sep">|</span>
+          <span class="brand-product">3D Video Studio</span>
+        </div>
+        <div class="header-badge">
+          <span class="badge-dot"></span> KI-powered
+        </div>
+      </div>
+    </header>
+
+    <!-- ── Main ── -->
+    <main class="main">
+
+      <!-- Hero -->
+      <section class="hero" id="heroSection">
+        <h1 class="hero-title">
+          3D KI-Erklärvideos<br>
+          <span class="gradient-text">für medizinische Bildung</span>
+        </h1>
+        <p class="hero-sub">
+          Gib deinen Prompt ein – die KI erstellt ein professionelles 3D-animiertes
+          Erklärvideo mit Sprachausgabe für deinen Arzt-Bildungsträger.
+        </p>
+        <div class="hero-badges">
+          <span class="pill">Claude AI Skript</span>
+          <span class="pill">ElevenLabs Stimme</span>
+          <span class="pill">Runway ML 3D</span>
+          <span class="pill">Deutsch</span>
+        </div>
+      </section>
+
+      <!-- Generator Card -->
+      <section class="card generator-card" id="generatorCard">
+
+        <!-- Prompt -->
+        <div class="field">
+          <label class="field-label">
+            <span class="label-icon">✦</span> Video-Prompt
+          </label>
+          <textarea
+            id="promptInput"
+            class="prompt-input"
+            maxlength="2000"
+            placeholder="Beispiel: Erstelle ein 3D-Erklärvideo über die Wirkweise von Metformin bei Typ-2-Diabetes für Allgemeinmediziner. Erkläre wie Metformin die hepatische Gluconeogenese hemmt und die Insulinsensitivität verbessert. Ton: professionell-sachlich. Dauer ca. 90 Sekunden."
+            rows="6"
+            oninput="updateCharCount()"
+          ></textarea>
+          <div class="field-meta">
+            <span id="charCount">0 / 2000</span>
+            <span class="hint">Je detaillierter der Prompt, desto besser das Video</span>
+          </div>
+        </div>
+
+        <!-- Example prompts -->
+        <div class="examples">
+          <span class="examples-label">Beispiele:</span>
+          <button class="example-chip" onclick="setExample(0)">Herzinfarkt-Pathophysiologie</button>
+          <button class="example-chip" onclick="setExample(1)">Insulin-Signalweg</button>
+          <button class="example-chip" onclick="setExample(2)">Antibiotika-Wirkmechanismus</button>
+          <button class="example-chip" onclick="setExample(3)">Neuronale Transmission</button>
+        </div>
+
+        <!-- Options -->
+        <div class="options-row">
+          <div class="option">
+            <label class="option-label">Zielgruppe</label>
+            <select id="audienceSelect" class="select">
+              <option value="general_practitioners">Allgemeinmediziner</option>
+              <option value="specialists">Fachärzte</option>
+              <option value="medical_students">Medizinstudenten</option>
+              <option value="nursing_staff">Pflegepersonal</option>
+              <option value="patients">Patienten</option>
+            </select>
+          </div>
+          <div class="option">
+            <label class="option-label">Videodauer</label>
+            <select id="durationSelect" class="select">
+              <option value="60">~60 Sek.</option>
+              <option value="90" selected>~90 Sek.</option>
+              <option value="120">~2 Min.</option>
+              <option value="180">~3 Min.</option>
+            </select>
+          </div>
+          <div class="option">
+            <label class="option-label">Visueller Stil</label>
+            <select id="styleSelect" class="select">
+              <option value="medical_blue">Medical Blue</option>
+              <option value="dark_tech">Dark Tech</option>
+              <option value="corporate_white">Corporate White</option>
+              <option value="nature_green">Nature Green</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="btn-row">
+          <button class="btn btn-ghost" id="scriptBtn" onclick="generateScriptOnly()">
+            📄 Nur Skript generieren
+          </button>
+          <button class="btn btn-primary" id="videoBtn" onclick="startVideoGeneration()">
+            <span class="btn-icon">▶</span> Vollständiges Video generieren
+          </button>
+        </div>
+      </section>
+
+      <!-- Progress -->
+      <section class="card progress-card" id="progressCard" style="display:none">
+        <div class="progress-header">
+          <h2 class="card-title" id="progressTitle">Generierung läuft...</h2>
+          <div class="progress-track">
+            <div class="progress-fill" id="progressFill" style="width:0%"></div>
+          </div>
+          <span class="progress-pct" id="progressPct">0%</span>
+        </div>
+
+        <div class="steps">
+          <div class="step" id="step-script">
+            <div class="step-ico">📝</div>
+            <div class="step-body">
+              <div class="step-name">Skript generieren (Claude AI)</div>
+              <div class="step-msg" id="msg-script">Warte auf Start...</div>
+            </div>
+            <div class="step-badge" id="badge-script">–</div>
+          </div>
+          <div class="step" id="step-tts">
+            <div class="step-ico">🎙️</div>
+            <div class="step-body">
+              <div class="step-name">Sprachausgabe (ElevenLabs)</div>
+              <div class="step-msg" id="msg-tts">Warte...</div>
+            </div>
+            <div class="step-badge" id="badge-tts">–</div>
+          </div>
+          <div class="step" id="step-video">
+            <div class="step-ico">🎬</div>
+            <div class="step-body">
+              <div class="step-name">3D-Animationen (Runway ML)</div>
+              <div class="step-msg" id="msg-video">Warte...</div>
+            </div>
+            <div class="step-badge" id="badge-video">–</div>
+          </div>
+          <div class="step" id="step-assemble">
+            <div class="step-ico">✂️</div>
+            <div class="step-body">
+              <div class="step-name">Video assemblieren (FFmpeg)</div>
+              <div class="step-msg" id="msg-assemble">Warte...</div>
+            </div>
+            <div class="step-badge" id="badge-assemble">–</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Script Preview -->
+      <section class="card script-card" id="scriptCard" style="display:none">
+        <div class="card-header">
+          <h2 class="card-title" id="scriptTitle">Generiertes Skript</h2>
+          <div class="script-meta" id="scriptMeta"></div>
+        </div>
+        <div class="scenes-list" id="scenesList"></div>
+      </section>
+
+      <!-- Video Result -->
+      <section class="card result-card" id="resultCard" style="display:none">
+        <div class="card-header">
+          <h2 class="card-title">🎬 Ihr Video ist fertig!</h2>
+        </div>
+        <div class="video-wrap">
+          <video id="videoPlayer" controls class="video-player"></video>
+        </div>
+        <div class="btn-row">
+          <a id="downloadBtn" class="btn btn-primary" download>⬇ Video herunterladen</a>
+          <button class="btn btn-ghost" onclick="resetTool()">↩ Neues Video</button>
+        </div>
+      </section>
+
+      <!-- Error -->
+      <section class="card error-card" id="errorCard" style="display:none">
+        <div class="error-icon">⚠️</div>
+        <h3>Fehler bei der Generierung</h3>
+        <p id="errorMsg"></p>
+        <button class="btn btn-ghost" onclick="resetTool()">Erneut versuchen</button>
+      </section>
+
+    </main>
+
+    <footer class="footer">
+      <p>HealBotics Video Studio · Powered by Claude AI, ElevenLabs &amp; Runway ML</p>
+      <p class="footer-hint">Benötigt: ANTHROPIC_API_KEY · Optional: ELEVENLABS_API_KEY, RUNWAYML_API_KEY</p>
+    </footer>
+
+  </div>
+
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
