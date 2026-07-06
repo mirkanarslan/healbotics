@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>STRÆHN — Biomimetic Luxury Haircare</title>
+  <meta name="description" content="STRÆHN verbindet Friseur-Expertise, biomimetische Wirkstofflogik und reduzierte Luxuspflege zu einem Ritual für sichtbar gepflegteres, stärkeres und eleganteres Haar." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./css/styles.css" />
+</head>
+<body>
+
+  <!-- ============ TOP BAR ============ -->
+  <div class="topbar">
+    <p>The first STRÆHN ritual — professional care for visible hair quality.</p>
+  </div>
+
+  <!-- ============ HEADER ============ -->
+  <header class="header" id="header">
+    <div class="header__inner container">
+      <nav class="header__nav header__nav--left" aria-label="Hauptnavigation">
+        <a href="#shop">Shop</a>
+        <a href="#ritual">Ritual</a>
+        <a href="#science">Science</a>
+        <a href="#craft">Craft</a>
+        <a href="#journal">Journal</a>
+      </nav>
+
+      <a class="header__logo" href="#top" aria-label="STRÆHN Startseite">STRÆHN</a>
+
+      <div class="header__actions">
+        <button class="icon-btn" aria-label="Konto" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20c1.4-3.6 4.2-5.2 7.5-5.2s6.1 1.6 7.5 5.2"/></svg>
+        </button>
+        <button class="icon-btn icon-btn--cart" id="cartToggle" aria-label="Warenkorb öffnen" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M5.5 8.5h13l-1 11.5h-11z"/><path d="M8.8 8.5V7a3.2 3.2 0 016.4 0v1.5"/></svg>
+          <span class="cart-count" id="cartCount" hidden>0</span>
+        </button>
+        <button class="icon-btn header__burger" id="navToggle" aria-label="Menü öffnen" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M4 7.5h16M4 12h16M4 16.5h16"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile Navigation -->
+  <div class="mobilenav" id="mobileNav" aria-hidden="true">
+    <nav aria-label="Mobile Navigation">
+      <a href="#shop">Shop</a>
+      <a href="#ritual">Ritual</a>
+      <a href="#science">Science</a>
+      <a href="#craft">Craft</a>
+      <a href="#journal">Journal</a>
+    </nav>
+    <p class="mobilenav__claim">STRÆHN — Biomimetic Luxury Haircare.</p>
+  </div>
+
+  <main id="top">
+
+    <!-- ============ 2. HERO ============ -->
+    <section class="hero">
+      <div class="hero__inner container">
+        <div class="hero__copy reveal">
+          <p class="eyebrow">Biomimetic Luxury Haircare</p>
+          <h1 class="hero__headline">
+            Biomimetic Haircare.<br />
+            <em>Developed from craft.</em><br />
+            Refined by science.
+          </h1>
+          <p class="hero__subline">
+            Ein professionelles Haarpflege-Ritual für sichtbar gepflegteres, stärkeres
+            und eleganteres Haar — entwickelt aus echter Friseurpraxis und moderner
+            Wirkstofflogik.
+          </p>
+          <div class="hero__ctas">
+            <a href="#ritual" class="btn btn--dark">Ritual entdecken</a>
+            <a href="#shop" class="btn btn--ghost">Die Produkte ansehen</a>
+          </div>
+        </div>
+
+        <div class="hero__stage reveal">
+          <figure class="hero__product hero__product--side hero__product--left">
+            <img src="./assets/shampoo.png" alt="STRÆHN Heartleaf Scalp Reset Shampoo" loading="eager" />
+          </figure>
+          <figure class="hero__product hero__product--main">
+            <img src="./assets/treatment.png" alt="STRÆHN Liquid Lamellar Peptide Treatment" loading="eager" />
+          </figure>
+          <figure class="hero__product hero__product--side hero__product--right">
+            <img src="./assets/scalp-serum.png" alt="STRÆHN BICOL+ Biomimetic Scalp Signal Serum" loading="eager" />
+          </figure>
+        </div>
+      </div>
+      <div class="hero__baseline container">
+        <span>Professional Haircare</span>
+        <span>Biomimetic Science</span>
+        <span>Understated Luxury</span>
+        <span>Skinification of Haircare</span>
+      </div>
+    </section>
+
+    <!-- ============ 3. BRAND PROMISE ============ -->
+    <section class="promise">
+      <div class="container">
+        <div class="promise__grid">
+          <article class="promise__item reveal">
+            <p class="promise__no">01</p>
+            <h3>Craft</h3>
+            <p>Entwickelt aus echter Erfahrung am Haar.</p>
+          </article>
+          <article class="promise__item reveal">
+            <p class="promise__no">02</p>
+            <h3>Science</h3>
+            <p>Inspiriert von biomimetischer Wirkstofflogik.</p>
+          </article>
+          <article class="promise__item reveal">
+            <p class="promise__no">03</p>
+            <h3>Ritual</h3>
+            <p>Kuratierte Pflege statt zufälliger Einzelprodukte.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 4. SHOP / PRODUCT GRID ============ -->
+    <section class="shop section" id="shop">
+      <div class="container">
+        <header class="section__head reveal">
+          <p class="eyebrow">Die erste Linie</p>
+          <h2>Fünf Produkte. Eine Logik.</h2>
+          <p class="section__sub">Jedes Produkt ist ein Schritt in einer professionellen Reihenfolge — von der Kopfhaut bis in die Längen.</p>
+        </header>
+
+        <div class="product-grid" id="productGrid">
+          <!-- Product cards rendered by app.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 5. RITUAL / BUNDLES ============ -->
+    <section class="ritual section section--beige" id="ritual">
+      <div class="container">
+        <header class="section__head reveal">
+          <p class="eyebrow">Das Ritual</p>
+          <h2>Ein Ritual für sichtbare Haarqualität.</h2>
+          <p class="section__sub">Reinigung, Pflege, Treatment, Schutz und Kopfhautpflege — kuratiert in einer professionellen Reihenfolge.</p>
+        </header>
+
+        <div class="bundle-grid" id="bundleGrid">
+          <!-- Bundle cards rendered by app.js -->
+        </div>
+
+        <p class="ritual__note reveal">Jedes Ritual ist eine vollständige Routine zum Vorteilspreis — zusammengestellt, wie sie im Salon empfohlen wird.</p>
+      </div>
+    </section>
+
+    <!-- ============ 6. SCIENCE ============ -->
+    <section class="science section" id="science">
+      <div class="container">
+        <div class="science__intro reveal">
+          <p class="eyebrow">Science</p>
+          <h2>Biomimetic logic.<br />Professional results.</h2>
+          <p>
+            STRÆHN nutzt moderne Wirkstofflogik, die sich an der Struktur von Haar und
+            Kopfhaut orientiert. Aminosäuren, Peptide, Ceramide, Panthenol und ausgewählte
+            Pflanzenextrakte werden nicht als Trend eingesetzt, sondern als Teil einer
+            durchdachten Routine.
+          </p>
+        </div>
+
+        <div class="matrix">
+          <article class="matrix__item reveal">
+            <h3>Peptides</h3>
+            <p>Signalwirkstoffe für moderne Kopfhaut- und Haarpflege.</p>
+          </article>
+          <article class="matrix__item reveal">
+            <h3>Amino Acids</h3>
+            <p>Bausteine für ein gepflegtes, gestärktes Haargefühl.</p>
+          </article>
+          <article class="matrix__item reveal">
+            <h3>Ceramides</h3>
+            <p>Lipide für Geschmeidigkeit und eine veredelte Haaroberfläche.</p>
+          </article>
+          <article class="matrix__item reveal">
+            <h3>Panthenol</h3>
+            <p>Feuchtigkeit, Pflegegefühl und bessere Kämmbarkeit.</p>
+          </article>
+          <article class="matrix__item reveal">
+            <h3>Heartleaf</h3>
+            <p>Beruhigend wirkender Pflanzenextrakt für eine ausgeglichene Kopfhautpflege.</p>
+          </article>
+          <article class="matrix__item reveal">
+            <h3>Prebiotic Complex</h3>
+            <p>Unterstützt das Gleichgewicht der Kopfhautpflege.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 7. CRAFT ============ -->
+    <section class="craft section section--dark" id="craft">
+      <div class="container">
+        <div class="craft__grid">
+          <div class="craft__copy reveal">
+            <p class="eyebrow eyebrow--light">Craft</p>
+            <h2>Born from the chair.<br />Built beyond the salon.</h2>
+            <p>
+              STRÆHN entsteht aus täglicher Erfahrung am Haar. Aus dem Blick eines
+              Friseurs, der sieht, wo Pflege zuhause scheitert: falsche Reihenfolge,
+              zu schwere Produkte, zu wenig Schutz, fehlende Kopfhautpflege und
+              austauschbare Routinen.
+            </p>
+            <p>
+              Aus dieser Praxis wird Präzision: eine Linie, die im Salon gedacht
+              und für zuhause gebaut ist.
+            </p>
+          </div>
+
+          <div class="craft__founders reveal">
+            <article class="founder">
+              <p class="founder__role">Hair Craft</p>
+              <h3>Khaled</h3>
+              <p>Friseur-Expertise, Anwendung und das Vertrauen von Jahren am Stuhl. Der Maßstab: Was am Haar funktioniert, bleibt. Was nicht funktioniert, fliegt.</p>
+            </article>
+            <article class="founder">
+              <p class="founder__role">Brand &amp; Structure</p>
+              <h3>Mirkan</h3>
+              <p>Builder, Struktur und Markenaufbau. Damit aus Handwerk eine Marke wird, die größer ist als eine Person — präzise, skalierbar, eigenständig.</p>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 8. RESULTS ============ -->
+    <section class="results section">
+      <div class="container">
+        <header class="section__head reveal">
+          <p class="eyebrow">Results</p>
+          <h2>Visible care. Not empty claims.</h2>
+          <p class="section__sub">Pflege, die man sieht und fühlt — ohne leere Versprechen.</p>
+        </header>
+
+        <div class="results__grid">
+          <div class="results__tile reveal"><span>Mehr Glanz</span><p>Eine veredelte Haaroberfläche, die Licht reflektiert.</p></div>
+          <div class="results__tile reveal"><span>Weniger Frizz</span><p>Geglättete Längen und mehr Kontrolle im Alltag.</p></div>
+          <div class="results__tile reveal"><span>Gepflegtere Längen</span><p>Geschmeidigkeit und Kämmbarkeit bis in die Spitzen.</p></div>
+          <div class="results__tile reveal"><span>Besseres Haargefühl</span><p>Ein gestärktes, gepflegtes Gefühl nach jeder Wäsche.</p></div>
+          <div class="results__tile reveal"><span>Kopfhaut-Routine</span><p>Tägliche Pflege für den Ort, an dem Haarqualität beginnt.</p></div>
+          <div class="results__tile reveal"><span>Hitzeschutz</span><p>Leichter Schutz vor Styling, Hitze und Reibung.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 9. HOW TO USE ============ -->
+    <section class="howto section section--beige">
+      <div class="container">
+        <header class="section__head reveal">
+          <p class="eyebrow">Routine</p>
+          <h2>Die Reihenfolge macht den Unterschied.</h2>
+        </header>
+
+        <ol class="howto__list">
+          <li class="howto__step reveal">
+            <span class="howto__no">01</span>
+            <div>
+              <p class="howto__phase">Cleanse</p>
+              <h3>Heartleaf Scalp Reset Shampoo</h3>
+              <p>Shampoo in die Kopfhaut einmassieren, gründlich ausspülen.</p>
+            </div>
+          </li>
+          <li class="howto__step reveal">
+            <span class="howto__no">02</span>
+            <div>
+              <p class="howto__phase">Condition</p>
+              <h3>FiberMimic Bond Repair Conditioner</h3>
+              <p>Conditioner in die Längen geben, kurz einwirken lassen, ausspülen.</p>
+            </div>
+          </li>
+          <li class="howto__step reveal">
+            <span class="howto__no">03</span>
+            <div>
+              <p class="howto__phase">Treat</p>
+              <h3>Liquid Lamellar Peptide Treatment</h3>
+              <p>Treatment nach der Wäsche in den Längen verwenden.</p>
+            </div>
+          </li>
+          <li class="howto__step reveal">
+            <span class="howto__no">04</span>
+            <div>
+              <p class="howto__phase">Protect</p>
+              <h3>Thermal Shield Leave-In Mist</h3>
+              <p>Leave-In vor Styling und Hitze in das handtuchtrockene Haar sprühen.</p>
+            </div>
+          </li>
+          <li class="howto__step reveal">
+            <span class="howto__no">05</span>
+            <div>
+              <p class="howto__phase">Signal</p>
+              <h3>BICOL+ Scalp Signal Serum</h3>
+              <p>Serum direkt auf die Kopfhaut auftragen und sanft einmassieren.</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ============ 10. JOURNAL ============ -->
+    <section class="journal section" id="journal">
+      <div class="container">
+        <header class="section__head section__head--row reveal">
+          <div>
+            <p class="eyebrow">Journal</p>
+            <h2>Wissen, das Haltung hat.</h2>
+          </div>
+          <a href="#journal" class="textlink">Alle Artikel</a>
+        </header>
+
+        <div class="journal__grid">
+          <article class="journal__card reveal">
+            <div class="journal__visual journal__visual--a"><span>No. 01</span></div>
+            <p class="journal__tag">Skinification</p>
+            <h3>Warum Haarpflege heute wie Skincare gedacht werden muss</h3>
+            <p>Wirkstoffe, Routinen, Reihenfolge: Was moderne Haarpflege von Hautpflege gelernt hat.</p>
+            <a href="#journal" class="textlink">Lesen</a>
+          </article>
+          <article class="journal__card reveal">
+            <div class="journal__visual journal__visual--b"><span>No. 02</span></div>
+            <p class="journal__tag">Wirkstoffe</p>
+            <h3>Bond Repair, Peptide und Ceramide: Was moderne Haircare leisten kann</h3>
+            <p>Ein nüchterner Blick auf die Wirkstofflogik hinter professioneller Pflege.</p>
+            <a href="#journal" class="textlink">Lesen</a>
+          </article>
+          <article class="journal__card reveal">
+            <div class="journal__visual journal__visual--c"><span>No. 03</span></div>
+            <p class="journal__tag">Routine</p>
+            <h3>Die richtige Reihenfolge für sichtbar gepflegteres Haar</h3>
+            <p>Warum die Abfolge der Produkte über das Ergebnis entscheidet — Schritt für Schritt.</p>
+            <a href="#journal" class="textlink">Lesen</a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 11. TRUST ============ -->
+    <section class="trust">
+      <div class="container">
+        <ul class="trust__list reveal">
+          <li>Developed from professional hair expertise</li>
+          <li>Biomimetic-inspired formulas</li>
+          <li>Premium D2C ritual</li>
+          <li>EU-compliance ready</li>
+          <li>Responsible formulation approach</li>
+          <li>Founder-led. Brand-built.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============ 12. NEWSLETTER ============ -->
+    <section class="newsletter section section--dark">
+      <div class="container newsletter__inner reveal">
+        <p class="eyebrow eyebrow--light">Early Access</p>
+        <h2>Join the first STRÆHN ritual.</h2>
+        <p class="newsletter__sub">
+          Erhalte frühen Zugang zum Launch, Produktupdates und Einblicke in die
+          Entwicklung der ersten STRÆHN Linie.
+        </p>
+        <form class="newsletter__form" id="newsletterForm" novalidate>
+          <input type="email" name="email" id="newsletterEmail" placeholder="E-Mail-Adresse" required aria-label="E-Mail-Adresse" />
+          <button type="submit" class="btn btn--light">Early Access sichern</button>
+        </form>
+        <p class="newsletter__success" id="newsletterSuccess" hidden>Danke. Du stehst auf der Liste für das erste STRÆHN Ritual.</p>
+        <p class="newsletter__fineprint">Kein Spam. Abmeldung jederzeit möglich.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============ 13. FOOTER ============ -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__top">
+        <div class="footer__brand">
+          <p class="footer__logo">STRÆHN</p>
+          <p class="footer__claim">Biomimetic Luxury Haircare.</p>
+        </div>
+        <div class="footer__cols">
+          <div class="footer__col">
+            <p>Marke</p>
+            <a href="#shop">Shop</a>
+            <a href="#ritual">Ritual</a>
+            <a href="#science">Science</a>
+          </div>
+          <div class="footer__col">
+            <p>Einblicke</p>
+            <a href="#craft">Craft</a>
+            <a href="#journal">Journal</a>
+            <a href="#top">Contact</a>
+          </div>
+          <div class="footer__col">
+            <p>Rechtliches</p>
+            <a href="#top">Impressum</a>
+            <a href="#top">Datenschutz</a>
+            <a href="#top">AGB</a>
+          </div>
+          <div class="footer__col">
+            <p>Social</p>
+            <a href="#top">Instagram</a>
+            <a href="#top">TikTok</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <p>© 2026 STRÆHN — Biomimetic Luxury Haircare.</p>
+        <p>Designed in Europe.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ============ CART DRAWER ============ -->
+  <div class="drawer-backdrop" id="drawerBackdrop" hidden></div>
+  <aside class="cart" id="cartDrawer" aria-hidden="true" aria-label="Warenkorb">
+    <div class="cart__head">
+      <h2>Warenkorb</h2>
+      <button class="icon-btn" id="cartClose" aria-label="Warenkorb schließen" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="cart__body" id="cartBody">
+      <!-- Items rendered by app.js -->
+    </div>
+    <div class="cart__foot" id="cartFoot">
+      <div class="cart__total">
+        <span>Zwischensumme</span>
+        <strong id="cartTotal">€0</strong>
+      </div>
+      <p class="cart__shippingnote">Versand &amp; Steuern werden im Checkout berechnet.</p>
+      <button class="btn btn--dark btn--full" id="checkoutBtn" type="button">Zur Kasse</button>
+    </div>
+  </aside>
+
+  <!-- ============ PRODUCT QUICK VIEW ============ -->
+  <div class="modal-backdrop" id="modalBackdrop" hidden></div>
+  <div class="modal" id="productModal" role="dialog" aria-modal="true" aria-hidden="true">
+    <button class="icon-btn modal__close" id="modalClose" aria-label="Schließen" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <div class="modal__content" id="modalContent">
+      <!-- Rendered by app.js -->
+    </div>
+  </div>
+
+  <!-- ============ STICKY MOBILE CTA ============ -->
+  <div class="sticky-cta" id="stickyCta">
+    <a href="#ritual" class="btn btn--dark btn--full">Ritual entdecken</a>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="./js/app.js"></script>
+</body>
+</html>
