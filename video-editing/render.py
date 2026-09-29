@@ -21,6 +21,7 @@ HERE = Path(__file__).resolve().parent
 GRADES = json.loads((HERE / "grades.json").read_text())
 FONT_BOLD = "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf"
 FONT_REG = "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf"
+FONT_SERIF = "/usr/share/fonts/truetype/dejavu/DejaVuSerif-Bold.ttf"
 FONT_MONO = "/usr/share/fonts/truetype/liberation/LiberationMono-Regular.ttf"
 
 
@@ -87,7 +88,34 @@ def overlay_filters(ov, h):
     raise ValueError(f"unknown overlay type: {kind}")
 
 
+def render_card(ff, clip, idx, cfg, tmp):
+    """Text on black, e.g. end card "Thanks for watching" or a chapter card."""
+    w, h, fps = cfg["width"], cfg["height"], cfg["fps"]
+    card, dur = clip["card"], clip.get("duration", 3.0)
+    font = FONT_SERIF if card.get("serif", True) else FONT_BOLD
+    size = int(h / 1080 * card.get("size", 72))
+    lines = [card["text"]] + ([card["sub"]] if card.get("sub") else [])
+    vf = []
+    for i, line in enumerate(lines):
+        fs = size if i == 0 else int(size * 0.45)
+        y = f"(h-th)/2-{int(size * 0.4)}" if len(lines) > 1 and i == 0 else (
+            f"(h/2)+{int(size * 0.5)}" if i else "(h-th)/2")
+        vf.append(f"drawtext=fontfile={font}:text='{esc(line)}':fontsize={fs}:"
+                  f"fontcolor={card.get('color', '#D4AF37') if i == 0 else 'white@0.85'}:"
+                  f"alpha='{fade_alpha(0.2, dur - 0.4, 0.5)}':x=(w-tw)/2:y={y}")
+    out = tmp / f"seg_{idx:03d}.mp4"
+    subprocess.run([ff, "-y", "-loglevel", "error", "-f", "lavfi", "-i",
+                    f"color=black:s={w}x{h}:r={fps}:d={dur}", "-f", "lavfi", "-i",
+                    "anullsrc=r=48000:cl=stereo", "-vf", ",".join(vf) + ",setsar=1",
+                    "-t", str(dur), "-c:v", "libx264", "-preset", "medium", "-crf", "18",
+                    "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "192k", "-ar", "48000",
+                    str(out)], check=True)
+    return out
+
+
 def render_segment(ff, clip, idx, cfg, tmp):
+    if "card" in clip:
+        return render_card(ff, clip, idx, cfg, tmp)
     w, h, fps = cfg["width"], cfg["height"], cfg["fps"]
     grade = GRADES[clip.get("grade", cfg["grade"])]
     speed = clip.get("speed", 1.0)
