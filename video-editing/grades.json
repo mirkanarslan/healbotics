@@ -11,5 +11,12 @@
     "description": "Innenraum/Laptop/Office: neutraler, leicht warm, sauberer.",
     "filter": "curves=master='0/0.04 0.5/0.51 1/0.97',colorbalance=rm=0.02:bm=-0.01:rh=0.04:bh=-0.03,eq=saturation=0.9,vignette=PI/6,noise=alls=4:allf=t"
   },
-  "none": {"description": "Ungegradet", "filter": "null"}
+  "none": {
+    "description": "Ungegradet",
+    "filter": "null"
+  },
+  "bloomfield_bw_recap": {
+    "description": "Schwarzweiß für Cold Open und „Previously“-Rückblick (belegt: ZCKbMiJ6OR4 0:00–0:25). Kontrastreich, Korn.",
+    "filter": "hue=s=0,curves=master='0/0.03 0.25/0.18 0.5/0.5 0.75/0.82 1/0.97',eq=contrast=1.12,vignette=PI/4.5,noise=alls=10:allf=t"
+  }
 }
