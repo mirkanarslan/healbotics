@@ -1,0 +1,8 @@
+exports/
+projects/*/raw/
+*.mp4
+*.mov
+*.MOV
+*.MP4
+*.mxf
+*.braw

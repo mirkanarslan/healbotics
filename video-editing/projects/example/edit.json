@@ -1,0 +1,15 @@
+{
+  "output": "../../exports/example.mp4",
+  "settings": {"width": 1920, "height": 1080, "fps": 25, "letterbox": 0, "grade": "bloomfield_warm_film"},
+  "clips": [
+    {"file": "raw/A001_morgen_strasse.mp4", "in": 0, "out": 4,
+     "overlays": [
+       {"type": "location", "text": "Berlin", "sub": "Deutschland", "start": 0.3, "duration": 3},
+       {"type": "time", "text": "07:42 AM", "start": 0.3, "duration": 3}
+     ]},
+    {"file": "raw/A002_office_laptop.mp4", "grade": "bloomfield_office",
+     "overlays": [
+       {"type": "stat", "text": "TAG 12  |  3 KUNDEN  |  4.200 EUR MRR", "start": 0.2, "duration": 2.5}
+     ]}
+  ]
+}
