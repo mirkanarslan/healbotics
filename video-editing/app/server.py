@@ -7,9 +7,11 @@ runs the cutting engine (vlog.job) as a subprocess, streaming its progress.
 Nothing leaves the machine except the one-time package download.
 """
 import json
+import platform
+import traceback
+import urllib.request
 import os
 import re
-import socket
 import subprocess
 import sys
 import threading
@@ -22,7 +24,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 APP = "MirkoMagic"
-VERSION = "1.0"
+VERSION = "1.0.2"
 HERE = Path(__file__).resolve().parent
 ENGINE = HERE / "engine" if (HERE / "engine" / "vlog").is_dir() else HERE.parent  # bundled app / repo checkout
 MAC = sys.platform == "darwin"
@@ -31,13 +33,16 @@ PROJECTS = Path(os.environ.get("HEALBOTICS_PROJECTS") or Path.home() / ("Movies"
 VENV = SUPPORT / "venv"
 VPY = VENV / ("Scripts/python.exe" if os.name == "nt" else "bin/python")
 BASE_PACKAGES = ["pillow", "imageio-ffmpeg", "certifi"]
-PORTS = range(8765, 8790)
+PORTS = range(53187, 53207)  # uncommon range, never shared (no SO_REUSEADDR)
+OLD_PORTS = range(8765, 8790)
 
 state = {
     "setup": {"status": "pending", "log": []},
     "job": {"running": False, "progress": 0.0, "phase": "", "log": [], "result": None, "error": None},
 }
 lock = threading.Lock()
+activity = {"last": 0.0, "active": 0, "seen": False}
+IDLE_QUIT = 120  # seconds without the window polling (and no job/upload) -> quit
 
 
 def log_to(section, line):
@@ -199,6 +204,27 @@ class Handler(BaseHTTPRequestHandler):
     def query(self):
         return {k: v[0] for k, v in urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query).items()}
 
+    def handle_one_request(self):
+        activity["active"] += 1
+        try:
+            super().handle_one_request()
+        except Exception:
+            err = traceback.format_exc()
+            print(err, flush=True)
+            try:
+                body = ("<h1>MirkoMagic: interner Fehler</h1><p>Bitte diesen Text an Claude schicken:</p><pre>"
+                        + err.replace("<", "&lt;") + "</pre>").encode()
+                self.send_response(500)
+                self.send_header("Content-Type", "text/html; charset=utf-8")
+                self.send_header("Content-Length", str(len(body)))
+                self.end_headers()
+                self.wfile.write(body)
+            except Exception:
+                pass
+        finally:
+            activity["active"] -= 1
+            activity["last"] = time.time()
+
     def do_GET(self):
         route = urllib.parse.urlparse(self.path).path
         if route == "/":
@@ -211,6 +237,7 @@ class Handler(BaseHTTPRequestHandler):
         elif route == "/api/ping":
             self.send_json({"app": APP, "version": VERSION})
         elif route == "/api/state":
+            activity["seen"] = True
             with lock:
                 self.send_json({**state, "projects_root": str(PROJECTS), "mac": MAC})
         elif route == "/api/projects":
@@ -315,43 +342,94 @@ class Handler(BaseHTTPRequestHandler):
             self.send_json({"ok": True})
         elif route == "/api/quit":
             self.send_json({"ok": True})
+            self.server._stopped = True
             threading.Thread(target=self.server.shutdown, daemon=True).start()
         else:
             self.send_error(404)
 
 
-def already_running():
-    for port in PORTS:
-        try:
-            with socket.create_connection(("127.0.0.1", port), timeout=0.3) as s:
-                s.sendall(b"GET /api/ping HTTP/1.0\r\n\r\n")
-                if APP.encode() in s.recv(4096):
-                    return port
-        except OSError:
-            continue
-    return None
+class Server(ThreadingHTTPServer):
+    allow_reuse_address = False  # never bind a port another program already uses
+    daemon_threads = True
+
+
+def ping(port):
+    """Version string of a MirkoMagic instance on this port, else None."""
+    try:
+        opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))  # bypass system proxies
+        with opener.open(f"http://127.0.0.1:{port}/api/ping", timeout=0.5) as r:
+            data = json.loads(r.read())
+            return data.get("version") if data.get("app") == APP else None
+    except Exception:
+        return None
+
+
+def stop_old_instances():
+    """Ask any running MirkoMagic (also older versions) to quit, so this one starts clean."""
+    opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+    for port in [*OLD_PORTS, *PORTS]:
+        if ping(port):
+            try:
+                req = urllib.request.Request(f"http://127.0.0.1:{port}/api/quit", data=b"{}", method="POST",
+                                             headers={"Content-Type": "application/json"})
+                opener.open(req, timeout=1).read()
+                print(f"Alte Instanz auf Port {port} beendet.", flush=True)
+            except Exception:
+                pass
+    time.sleep(0.5)
+
+
+def self_test(port):
+    opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+    with opener.open(f"http://127.0.0.1:{port}/", timeout=5) as r:
+        if r.status != 200 or b"MirkoMagic" not in r.read():
+            raise RuntimeError(f"Startseite antwortet mit Status {r.status}")
+
+
+def alert(msg):
+    print(msg, flush=True)
+    if MAC:
+        subprocess.run(["osascript", "-e", f'display dialog "{msg}" buttons {{"OK"}} with title "{APP}"'])
 
 
 def main():
+    print(f"{APP} {VERSION} | Python {platform.python_version()} {sys.executable} | {platform.platform()}", flush=True)
+    print(f"Programm: {HERE}\nEngine: {ENGINE}\nProjekte: {PROJECTS}", flush=True)
     PROJECTS.mkdir(parents=True, exist_ok=True)
-    port = already_running()
-    if port:  # second launch: just show the window again
-        webbrowser.open(f"http://127.0.0.1:{port}/")
-        return
+    stop_old_instances()
+    httpd = None
     for port in PORTS:
         try:
-            httpd = ThreadingHTTPServer(("127.0.0.1", port), Handler)
+            httpd = Server(("127.0.0.1", port), Handler)
             break
-        except OSError:
-            continue
-    else:
-        sys.exit("Kein freier Port gefunden.")
-    threading.Thread(target=setup, daemon=True).start()
+        except OSError as e:
+            print(f"Port {port} belegt ({e}), versuche den nächsten.", flush=True)
+    if not httpd:
+        alert("Kein freier Port gefunden. Bitte den Mac neu starten.")
+        sys.exit(1)
+    threading.Thread(target=httpd.serve_forever, daemon=True).start()
     url = f"http://127.0.0.1:{port}/"
+    try:
+        self_test(port)
+    except Exception as e:
+        print(traceback.format_exc(), flush=True)
+        alert(f"Selbsttest fehlgeschlagen: {e}")
+        sys.exit(1)
+    threading.Thread(target=setup, daemon=True).start()
     print(f"{APP} läuft auf {url}", flush=True)
     if not os.environ.get("HEALBOTICS_NO_BROWSER"):
-        threading.Timer(0.6, lambda: webbrowser.open(url)).start()
-    httpd.serve_forever()
+        webbrowser.open(url)
+    activity["last"] = time.time()
+    try:  # run until "Beenden", or until the window is closed and nothing is running
+        while not getattr(httpd, "_stopped", False):
+            time.sleep(1)
+            idle = time.time() - activity["last"]
+            if activity["seen"] and idle > IDLE_QUIT and not activity["active"] and not state["job"]["running"]:
+                print("Fenster geschlossen, MirkoMagic beendet sich.", flush=True)
+                break
+    except KeyboardInterrupt:
+        pass
+    httpd.shutdown()
 
 
 if __name__ == "__main__":

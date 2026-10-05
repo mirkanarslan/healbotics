@@ -18,9 +18,9 @@ MIRKOMAGIC – so geht's
 
 Wo liegt was?
 - Projekte und fertige Videos: Filme > MirkoMagic > <Projekt> > export
-- Beenden: oben rechts auf "Beenden" (die App läuft sonst unsichtbar im Hintergrund weiter).
-- Browserfenster aus Versehen geschlossen? Einfach http://127.0.0.1:8765 öffnen
-  (am besten als Lesezeichen speichern). Nach "Beenden" startet ein Doppelklick die App neu.
+- Beenden: oben rechts auf "Beenden" oder einfach das Browserfenster schließen
+  (MirkoMagic beendet sich dann nach 2 Minuten selbst, ein laufender Schnitt wird fertig gemacht).
+- Wieder öffnen: App erneut doppelklicken.
 - Probleme? Protokoll: Library > Application Support > MirkoMagic > server.log
 
 Tipp: iPhone-Videos per AirDrop übertragen oder in der Fotos-App mit

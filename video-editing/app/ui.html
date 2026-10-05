@@ -333,7 +333,11 @@ function render(s) {
 
 async function poll() {
   clearTimeout(polling);
-  try { render(await api("/api/state")); } catch (e) {}
+  try { render(await api("/api/state")); }
+  catch (e) {
+    document.body.innerHTML = "<main><h1>MirkoMagic ist beendet</h1><p class='sub'>Zum Weitermachen die App erneut öffnen.</p></main>";
+    return;
+  }
   polling = setTimeout(poll, jobRunning || !setupReady ? 1000 : 4000);
 }
 
