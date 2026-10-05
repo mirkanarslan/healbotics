@@ -1,0 +1,22 @@
+{
+  "bloomfield_warm_film": {
+    "description": "Hauptlook: warmer Film-Look, angehobene Schwarzwerte, weiche Highlights, leicht entsättigt, Teal in den Schatten, Orange in den Highlights, feines Korn und Vignette. VORLÄUFIG, wird nach der Referenzanalyse feinjustiert.",
+    "filter": "curves=master='0/0.06 0.25/0.24 0.5/0.52 0.8/0.82 1/0.95',colorbalance=rs=-0.04:gs=0.0:bs=0.05:rm=0.03:gm=0.0:bm=-0.02:rh=0.06:gh=0.02:bh=-0.05,eq=saturation=0.88:contrast=1.03,vignette=PI/5,noise=alls=6:allf=t"
+  },
+  "bloomfield_night": {
+    "description": "Nacht/Stadtlichter: kühlere Schatten, satte Lichter, mehr Korn.",
+    "filter": "curves=master='0/0.05 0.3/0.26 0.6/0.62 1/0.96',colorbalance=rs=-0.06:bs=0.08:rh=0.08:gh=0.03:bh=-0.04,eq=saturation=0.92:contrast=1.06,vignette=PI/4.5,noise=alls=9:allf=t"
+  },
+  "bloomfield_office": {
+    "description": "Innenraum/Laptop/Office: neutraler, leicht warm, sauberer.",
+    "filter": "curves=master='0/0.04 0.5/0.51 1/0.97',colorbalance=rm=0.02:bm=-0.01:rh=0.04:bh=-0.03,eq=saturation=0.9,vignette=PI/6,noise=alls=4:allf=t"
+  },
+  "none": {
+    "description": "Ungegradet",
+    "filter": "null"
+  },
+  "bloomfield_bw_recap": {
+    "description": "Schwarzweiß für Cold Open und „Previously“-Rückblick (belegt: ZCKbMiJ6OR4 0:00–0:25). Kontrastreich, Korn.",
+    "filter": "hue=s=0,curves=master='0/0.03 0.25/0.18 0.5/0.5 0.75/0.82 1/0.97',eq=contrast=1.12,vignette=PI/4.5,noise=alls=10:allf=t"
+  }
+}

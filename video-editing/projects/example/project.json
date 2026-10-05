@@ -1,0 +1,28 @@
+{
+  "title": "Beispiel",
+  "episode": 1,
+  "language": "de",
+  "timezone": "Europe/Berlin",
+  "target_minutes": 12,
+  "resolution": "1080p",
+  "fps": 30,
+  "stats": [
+    "TAG 12 | 3 KUNDEN | 4.200 EUR MRR"
+  ],
+  "hook": null,
+  "hook_keywords": [],
+  "previously": [],
+  "music": {
+    "file": "music/track.mp3",
+    "volume": 0.22
+  },
+  "locations": {},
+  "default_location": null,
+  "station_names": [],
+  "grades": {},
+  "end_card": {
+    "text": "Thanks for watching",
+    "sub": "Neue Folge jede Woche"
+  },
+  "burn_subtitles": false
+}

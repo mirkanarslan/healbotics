@@ -1,0 +1,13 @@
+exports/
+projects/*/raw/
+*.mp4
+*.mov
+*.MOV
+*.MP4
+*.mxf
+*.braw
+projects/*/inventory.json
+projects/*/geocache.json
+projects/*/music/
+__pycache__/
+dist/
