@@ -9,51 +9,10 @@ import json
 import tempfile
 from pathlib import Path
 
-from .common import HERE, esc_text, ffmpeg, font_opt, has_filter, probe, run, srt_tc, tc
+from .common import HERE, ffmpeg, has_filter, probe, run, srt_tc, tc
+from .text import overlay_png
 
 GRADES = json.loads((HERE / "grades.json").read_text())
-
-
-def fade_alpha(start, dur, fade=0.35):
-    end = start + dur
-    return (f"if(lt(t,{start}),0,if(lt(t,{start + fade}),(t-{start})/{fade},"
-            f"if(lt(t,{end - fade}),1,if(lt(t,{end}),({end}-t)/{fade},0))))")
-
-
-def overlay_filters(ov, h):
-    """drawtext filters for one overlay, timed relative to the segment."""
-    start, dur = ov.get("start", 0.3), ov.get("duration", 3.0)
-    size = int(h * ov.get("scale", 1.0) / 1080 * 64)
-    common = f"fontcolor=white:alpha='{fade_alpha(start, dur)}':enable='between(t,{start},{start + dur})'"
-    text = esc_text(ov["text"])
-    kind = ov["type"]
-    if kind == "location":  # city large bottom-left, country/district below
-        out = [f"drawtext={font_opt('bold')}:text='{esc_text(ov['text'].upper())}':fontsize={size}:{common}:"
-               f"x=w*0.06:y=h*0.78-th:shadowcolor=black@0.45:shadowx=2:shadowy=2"]
-        if ov.get("sub"):
-            out.append(f"drawtext={font_opt('regular')}:text='{esc_text(ov['sub'])}':fontsize={int(size * 0.42)}:"
-                       f"{common}:x=w*0.06+4:y=h*0.78+{int(size * 0.2)}:shadowcolor=black@0.45:shadowx=1:shadowy=1")
-        return out
-    if kind == "time":  # small monospace clock top-left
-        return [f"drawtext={font_opt('mono')}:text='{text}':fontsize={int(size * 0.55)}:{common}:"
-                f"x=w*0.05:y=h*0.07:shadowcolor=black@0.5:shadowx=1:shadowy=1"]
-    if kind == "stat":  # build-in-public numbers in a box
-        return [f"drawtext={font_opt('bold')}:text='{text}':fontsize={int(size * 0.6)}:{common}:box=1:"
-                f"boxcolor=black@0.55:boxborderw={int(size * 0.3)}:x=(w-tw)/2:y=h*0.12"]
-    if kind == "caption":  # key sentence lower third
-        return [f"drawtext={font_opt('bold')}:text='{text}':fontsize={int(size * 0.55)}:{common}:"
-                f"x=(w-tw)/2:y=h*0.86:shadowcolor=black@0.7:shadowx=2:shadowy=2"]
-    if kind == "title":  # e.g. "Previously" over the B&W recap
-        return [f"drawtext={font_opt('serif')}:text='{text}':fontsize={int(size * 1.1)}:{common}:"
-                f"x=(w-tw)/2:y=(h-th)/2:shadowcolor=black@0.6:shadowx=2:shadowy=2"]
-    raise ValueError(f"Unbekannter Overlay-Typ: {kind}")
-
-
-def subtitle_filters(subs, h):
-    size = int(h / 1080 * 40)
-    return [f"drawtext={font_opt('bold')}:text='{esc_text(t)}':fontsize={size}:fontcolor=white:"
-            f"box=1:boxcolor=black@0.5:boxborderw={size // 3}:x=(w-tw)/2:y=h*0.9-th:"
-            f"enable='between(t,{s},{e})'" for s, e, t in subs]
 
 
 def prep_chain(meta, w, h, fps):
@@ -81,55 +40,85 @@ def encode_args(cfg):
             "-c:a", "aac", "-b:a", "192k", "-ar", "48000", "-ac", "2"]
 
 
-def render_card(clip, out, cfg):
+class Inputs:
+    """Collects ffmpeg inputs and hands out their stream index."""
+
+    def __init__(self):
+        self.args, self.n = [], 0
+
+    def add(self, *args):
+        self.args += [*args]
+        self.n += 1
+        return self.n - 1
+
+
+def add_overlay(graph, inputs, last, ov, w, h, fps, seg_dur, cache, tag, fade=0.35):
+    """Overlay one text PNG on stream `last`, return the new stream label."""
+    start = ov.get("start", 0.3)
+    dur = min(ov.get("duration", 3.0), max(0.1, seg_dur - start))
+    end = start + dur
+    png = overlay_png(ov, w, h, cache)
+    k = inputs.add("-loop", "1", "-framerate", str(fps), "-t", f"{seg_dur:.3f}", "-i", str(png))
+    chain = "format=rgba"
+    if fade:
+        f = min(fade, dur / 3)
+        chain += f",fade=t=in:st={start}:d={f}:alpha=1,fade=t=out:st={end - f}:d={f}:alpha=1"
+    graph.append(f"[{k}:v]{chain}[o{tag}]")
+    graph.append(f"[{last}][o{tag}]overlay=eof_action=pass:enable='between(t,{start},{end})'[l{tag}]")
+    return f"l{tag}"
+
+
+def render_card(clip, out, cfg, cache):
     w, h, fps = cfg["width"], cfg["height"], cfg["fps"]
-    card, dur = clip["card"], clip.get("duration", 3.0)
-    size = int(h / 1080 * card.get("size", 72))
-    lines = [card["text"]] + ([card["sub"]] if card.get("sub") else [])
-    vf = []
-    for i, line in enumerate(lines):
-        fs = size if i == 0 else int(size * 0.45)
-        y = "(h-th)/2" if len(lines) == 1 else (f"(h-th)/2-{int(size * 0.4)}" if i == 0 else f"(h/2)+{int(size * 0.5)}")
-        color = card.get("color", "#D4AF37") if i == 0 else "white@0.85"
-        vf.append(f"drawtext={font_opt('serif' if card.get('serif', True) else 'bold')}:text='{esc_text(line)}':"
-                  f"fontsize={fs}:fontcolor={color}:alpha='{fade_alpha(0.2, dur - 0.4, 0.5)}':x=(w-tw)/2:y={y}")
-    run([ffmpeg(), "-y", "-loglevel", "error", "-f", "lavfi", "-i", f"color=black:s={w}x{h}:r={fps}:d={dur}",
-         "-f", "lavfi", "-i", "anullsrc=r=48000:cl=stereo", "-vf", ",".join(vf) + ",setsar=1",
-         "-t", str(dur), *encode_args(cfg), str(out)])
+    dur = clip.get("duration", 3.0)
+    inputs, graph = Inputs(), []
+    inputs.add("-f", "lavfi", "-i", f"color=black:s={w}x{h}:r={fps}:d={dur}")
+    a = inputs.add("-f", "lavfi", "-i", "anullsrc=r=48000:cl=stereo")
+    ov = {"type": "card", **clip["card"], "start": 0.2, "duration": dur - 0.4}
+    last = add_overlay(graph, inputs, "0:v", ov, w, h, fps, dur, cache, "c", fade=0.5)
+    graph.append(f"[{last}]setsar=1[v]")
+    run([ffmpeg(), "-y", "-loglevel", "error", *inputs.args, "-filter_complex", ";".join(graph),
+         "-map", "[v]", "-map", f"{a}:a", "-t", str(dur), *encode_args(cfg), str(out)])
     return dur
 
 
-def render_segment(clip, out, cfg):
+def render_segment(clip, out, cfg, cache):
     if "card" in clip:
-        return render_card(clip, out, cfg)
+        return render_card(clip, out, cfg, cache)
     w, h, fps = cfg["width"], cfg["height"], cfg["fps"]
     meta = probe(clip["file"])
     speed = clip.get("speed", 1.0)
     start, end = clip.get("in", 0), clip.get("out", meta["duration"])
     dur = (end - start) / speed
 
-    inputs = ["-ss", str(start), "-to", str(end), "-i", clip["file"]]
-    graph = [f"[0:v]{prep_chain(meta, w, h, fps)}" + (f",setpts=PTS/{speed}" if speed != 1 else "")
-             + f",{GRADES[clip.get('grade', cfg['grade'])]['filter']}[base]"]
+    inputs, graph = Inputs(), []
+    inputs.add("-ss", str(start), "-to", str(end), "-i", clip["file"])
+    graph.append(f"[0:v]{prep_chain(meta, w, h, fps)}" + (f",setpts=PTS/{speed}" if speed != 1 else "")
+                 + f",{GRADES[clip.get('grade', cfg['grade'])]['filter']}[base]")
     last = "base"
 
     cover = clip.get("cover")
-    if cover:  # B-roll over the voice: video from another clip, audio stays
+    if cover:  # B-roll over the voice: picture from another clip, sound stays
         cmeta = probe(cover["file"])
-        inputs += ["-ss", str(cover.get("in", 0)), "-t", str(cover["duration"]), "-i", cover["file"]]
+        k = inputs.add("-ss", str(cover.get("in", 0)), "-t", str(cover["duration"]), "-i", cover["file"])
         cs = cover.get("start", 0)
-        graph.append(f"[1:v]{prep_chain(cmeta, w, h, fps)},{GRADES[cover.get('grade', cfg['grade'])]['filter']},"
+        graph.append(f"[{k}:v]{prep_chain(cmeta, w, h, fps)},{GRADES[cover.get('grade', cfg['grade'])]['filter']},"
                      f"setpts=PTS-STARTPTS+{cs}/TB[cov]")
         graph.append(f"[{last}][cov]overlay=eof_action=pass:enable='between(t,{cs},{cs + cover['duration']})'[cvd]")
         last = "cvd"
 
-    texts = [f for ov in clip.get("overlays", []) for f in overlay_filters(ov, h)]
-    if cfg.get("burn_subtitles") and clip.get("subtitles"):
-        texts += subtitle_filters(clip["subtitles"], h)
+    for i, ov in enumerate(clip.get("overlays", [])):
+        last = add_overlay(graph, inputs, last, ov, w, h, fps, dur, cache, f"t{i}")
+    if cfg.get("burn_subtitles"):
+        for i, (s0, e0, text) in enumerate(clip.get("subtitles", [])):
+            ov = {"type": "subtitle", "text": text, "start": s0, "duration": e0 - s0}
+            last = add_overlay(graph, inputs, last, ov, w, h, fps, dur, cache, f"s{i}", fade=0)
     if cfg.get("letterbox"):
         bar = int(h * cfg["letterbox"])
-        texts.append(f"drawbox=x=0:y=0:w=iw:h={bar}:color=black:t=fill,drawbox=x=0:y=ih-{bar}:w=iw:h={bar}:color=black:t=fill")
-    graph.append(f"[{last}]" + (",".join(texts) if texts else "null") + "[v]")
+        graph.append(f"[{last}]drawbox=x=0:y=0:w=iw:h={bar}:color=black:t=fill,"
+                     f"drawbox=x=0:y=ih-{bar}:w=iw:h={bar}:color=black:t=fill[lb]")
+        last = "lb"
+    graph.append(f"[{last}]null[v]")
 
     vol = clip.get("volume", 1.0)
     if meta["has_audio"] and vol > 0:
@@ -137,9 +126,8 @@ def render_segment(clip, out, cfg):
         graph.append(f"[0:a]{atempo}aresample=48000,aformat=channel_layouts=stereo,volume={vol},apad[a]")
         amap = "[a]"
     else:
-        inputs += ["-f", "lavfi", "-i", "anullsrc=r=48000:cl=stereo"]
-        amap = f"{len([x for x in inputs if x == '-i']) - 1}:a"
-    run([ffmpeg(), "-y", "-loglevel", "error", *inputs, "-filter_complex", ";".join(graph),
+        amap = f"{inputs.add('-f', 'lavfi', '-i', 'anullsrc=r=48000:cl=stereo')}:a"
+    run([ffmpeg(), "-y", "-loglevel", "error", *inputs.args, "-filter_complex", ";".join(graph),
          "-map", "[v]", "-map", amap, "-t", f"{dur:.3f}", *encode_args(cfg), str(out)])
     return dur
 
@@ -166,7 +154,7 @@ def subtitles(edl, durations):
     return lines
 
 
-def run_render(edl_path, preview=False, uhd=False):
+def run_render(edl_path, preview=False, uhd=False, progress=None):
     import os
     edl_path = Path(edl_path).resolve()
     edl = json.loads(edl_path.read_text())
@@ -187,9 +175,12 @@ def run_render(edl_path, preview=False, uhd=False):
         tmp = Path(t)
         segs, durs = [], []
         for i, clip in enumerate(edl["clips"]):
-            print(f"\r  Segment {i + 1}/{len(edl['clips'])}", end="", flush=True)
+            if progress:
+                progress(i, len(edl["clips"]))
+            else:
+                print(f"\r  Segment {i + 1}/{len(edl['clips'])}", end="", flush=True)
             out = tmp / f"seg_{i:04d}.mp4"
-            durs.append(render_segment(clip, out, cfg))
+            durs.append(render_segment(clip, out, cfg, tmp))
             segs.append(out)
         print()
         (tmp / "list.txt").write_text("".join(f"file '{s}'\n" for s in segs))

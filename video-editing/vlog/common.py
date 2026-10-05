@@ -50,20 +50,23 @@ def font(kind):
                      f"oder lege video-editing/fonts/{kind}.ttf ab.")
 
 
-def font_opt(kind):
-    """fontfile=... option for drawtext, quoted so paths with spaces work."""
-    return "expansion=none:fontfile='" + font(kind).replace("'", r"\'").replace(":", r"\:") + "'"
-
-
 @lru_cache(None)
 def ffmpeg():
-    if shutil.which("ffmpeg"):
+    """System ffmpeg if present, else the one bundled with imageio-ffmpeg.
+    VLOG_FFMPEG=bundled forces the bundled binary (used by the desktop app tests)."""
+    if os.environ.get("VLOG_FFMPEG") != "bundled" and shutil.which("ffmpeg"):
         return "ffmpeg"
-    raise SystemExit("ffmpeg fehlt. Mac: `brew install ffmpeg`, Linux: `apt-get install ffmpeg`.")
+    try:
+        import imageio_ffmpeg
+        return imageio_ffmpeg.get_ffmpeg_exe()
+    except ImportError:
+        raise SystemExit("ffmpeg fehlt. `pip install imageio-ffmpeg` oder `brew install ffmpeg`.")
 
 
 @lru_cache(None)
 def ffprobe():
+    if os.environ.get("VLOG_FFMPEG") == "bundled":
+        return None
     return shutil.which("ffprobe")
 
 
@@ -83,15 +86,7 @@ def probe(path):
     audio presence, HDR transfer, creation time and GPS tags."""
     path = str(path)
     if not ffprobe():
-        info = subprocess.run([ffmpeg(), "-hide_banner", "-i", path],
-                              capture_output=True, text=True).stderr
-        hms = re.search(r"Duration: (\d+):(\d+):([\d.]+)", info).groups()
-        size = re.search(r"Video:.*?(\d{2,5})x(\d{2,5})", info)
-        return {"duration": int(hms[0]) * 3600 + int(hms[1]) * 60 + float(hms[2]),
-                "width": int(size.group(1)) if size else 0,
-                "height": int(size.group(2)) if size else 0,
-                "has_audio": "Audio:" in info, "has_video": "Video:" in info,
-                "transfer": None, "tags": {}}
+        return _probe_ffmpeg(path)
     data = json.loads(subprocess.run(
         [ffprobe(), "-v", "error", "-print_format", "json", "-show_format", "-show_streams", path],
         capture_output=True, text=True, check=True).stdout)
@@ -115,6 +110,35 @@ def probe(path):
         "fps": _fps(v.get("avg_frame_rate", "0/1")),
         "tags": tags,
     }
+
+
+def _probe_ffmpeg(path):
+    """Same facts as probe(), parsed from `ffmpeg -i` (bundled ffmpeg has no ffprobe)."""
+    info = subprocess.run([ffmpeg(), "-hide_banner", "-i", path], capture_output=True, text=True).stderr
+    hms = re.search(r"Duration: (\d+):(\d+):([\d.]+)", info)
+    video = re.search(r"Stream #\S+.*?Video: (.*)", info)
+    w = h = 0
+    transfer = primaries = None
+    fps = 0
+    if video:
+        line = video.group(1)
+        size = re.search(r"\b(\d{2,5})x(\d{2,5})\b", line)
+        if size:
+            w, h = int(size.group(1)), int(size.group(2))
+        color = re.search(r"\((?:tv|pc), ([\w-]+)/([\w-]+)/([\w-]+)", line)
+        if color:
+            primaries, transfer = color.group(2), color.group(3)
+        rate = re.search(r"([\d.]+) fps", line)
+        fps = float(rate.group(1)) if rate else 0
+    rot = re.search(r"rotation of (-?[\d.]+) degrees", info) or re.search(r"rotate\s*:\s*(-?\d+)", info)
+    if rot and abs(int(float(rot.group(1)))) % 180 == 90:
+        w, h = h, w
+    tags = {}
+    for key, val in re.findall(r"^\s{4,}([\w.\-]+)\s*:\s(.*)$", info, re.M):
+        tags.setdefault(key.lower(), val.strip())
+    return {"duration": int(hms[1]) * 3600 + int(hms[2]) * 60 + float(hms[3]) if hms else 0,
+            "width": w, "height": h, "has_audio": "Audio:" in info, "has_video": bool(video),
+            "transfer": transfer, "primaries": primaries, "fps": fps, "tags": tags}
 
 
 def _fps(rate):
@@ -145,8 +169,3 @@ def load_json(path, default=None):
 def save_json(path, data):
     Path(path).write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n")
 
-
-def esc_text(text):
-    """Escape text for a single-quoted drawtext value."""
-    return (str(text).replace("\\", "\\\\").replace(":", "\\:").replace("'", "’")
-            .replace(",", "\\,"))

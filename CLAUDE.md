@@ -20,7 +20,9 @@ Wir übernehmen den Schnittstil als Vorlage (Look, Tempo, Story-Aufbau, Einblend
 eigenem Material, eigener Musik und eigenen Grafiken. Keine Clips, Musik oder Grafiken aus den
 Referenzvideos verwenden.
 
-Werkzeug: `video-editing/cut.py` (Anleitung und alle Felder in `video-editing/README.md`).
+Werkzeug: Mac-App `video-editing/app/` (Build: `python3 video-editing/app/build.py`) und Kommandozeile
+`video-editing/cut.py`. Beide nutzen dieselbe Engine `video-editing/vlog/`. Anleitung und alle Felder in
+`video-editing/README.md`.
 
 Ablauf pro Folge:
 1. `python3 video-editing/cut.py new "<titel>"`, Rohmaterial (iPhone-Originale mit Zeit und GPS) nach

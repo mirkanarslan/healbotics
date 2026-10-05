@@ -20,7 +20,8 @@ def recorded_at(meta, path, tz):
     raw = tags.get("com.apple.quicktime.creationdate")  # local time with offset, iPhone
     if raw:
         try:
-            return datetime.strptime(raw[:24], "%Y-%m-%dT%H:%M:%S%z").astimezone(tz)
+            # keep the camera's own offset: the clock card shows local time where it was filmed
+            return datetime.strptime(raw[:24], "%Y-%m-%dT%H:%M:%S%z")
         except ValueError:
             pass
     raw = tags.get("creation_time")  # UTC
@@ -99,7 +100,7 @@ def classify(speech, duration):
     return "talk" if talk >= 3 and talk / max(duration, 0.1) >= 0.35 else "broll"
 
 
-def run(project_dir, model="small", whisper=True, online=True):
+def run(project_dir, model="small", whisper=True, online=True, progress=None):
     project_dir = Path(project_dir).resolve()
     cfg = load_json(project_dir / "project.json", {})
     tz = ZoneInfo(cfg.get("timezone", "Europe/Berlin"))
@@ -111,7 +112,9 @@ def run(project_dir, model="small", whisper=True, online=True):
         raise SystemExit(f"Keine Videos in {project_dir / 'raw'} gefunden.")
 
     clips, no_whisper = [], False
-    for path in files:
+    for i, path in enumerate(files):
+        if progress:
+            progress(i, len(files))
         rel = str(path.relative_to(project_dir))
         stat = path.stat()
         prev = old.get(rel)

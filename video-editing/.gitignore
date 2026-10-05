@@ -10,3 +10,4 @@ projects/*/inventory.json
 projects/*/geocache.json
 projects/*/music/
 __pycache__/
+dist/

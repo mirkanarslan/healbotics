@@ -15,7 +15,7 @@ from .common import load_json, save_json, tc
 
 DEFAULTS = {
     "fps": 30, "resolution": "1080p", "target_minutes": 12, "station_gap_minutes": 60,
-    "max_talk_seconds": 120, "cover_every": 9, "montage_shots": 16, "montage_shot_len": 1.0,
+    "max_talk_seconds": None, "cover_every": 9, "montage_shots": 16, "montage_shot_len": 1.0,
     "time_format": "%H:%M",
     "hook_keywords": ["problem", "geld", "euro", "kunden", "risiko", "alles", "nie", "heute",
                       "erste", "million", "fehler", "warum"],
@@ -284,7 +284,8 @@ def run(project_dir):
         raise SystemExit("inventory.json fehlt. Erst `cut.py ingest` ausführen.")
     clips = inv["clips"]
 
-    max_talk = cfg["max_talk_seconds"]
+    # no per-clip cap by default: talk is only trimmed to reach the target length
+    max_talk = cfg["max_talk_seconds"] or max([sum(e - s for s, e in c["speech"]) for c in clips] + [20]) + 1
     edl = build(clips, cfg, max_talk)
     target = cfg["target_minutes"] * 60 * 1.15
     while length(edl) > target and max_talk > 20:  # trim talk per clip until it fits
@@ -293,7 +294,7 @@ def run(project_dir):
 
     w, h = RES[cfg["resolution"]]
     out = {
-        "output": f"../../exports/{project_dir.name}.mp4",
+        "output": f"{cfg.get('output_dir', '../../exports')}/{project_dir.name}.mp4",
         "settings": {"width": w, "height": h, "fps": cfg["fps"], "grade": cfg.get("grade_default", "bloomfield_warm_film"),
                      "burn_subtitles": cfg.get("burn_subtitles", False)},
         "clips": edl,
@@ -303,6 +304,6 @@ def run(project_dir):
     save_json(project_dir / "edit.json", out)
     write_review(project_dir / "review.md", edl, cfg, project_dir.name)
     print(f"Rohschnitt: {len(edl)} Segmente, Länge {tc(length(edl))} "
-          f"(Ziel {cfg['target_minutes']} min, Talk-Limit pro Clip {max_talk}s)")
+          f"(Ziel {cfg['target_minutes']} min, Sprache pro Clip max. {int(max_talk)}s)")
     print(f"  {project_dir / 'edit.json'}\n  {project_dir / 'review.md'}")
     return out

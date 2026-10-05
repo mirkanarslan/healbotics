@@ -1,0 +1,25 @@
+HEALBOTICS CUTTER – so geht's
+
+1. "Healbotics Cutter.app" in den Ordner "Programme" ziehen.
+
+2. Beim ersten Öffnen meldet macOS, dass die App von einem unbekannten Entwickler ist.
+   So öffnest du sie trotzdem (nur einmal nötig):
+   - macOS 15 (Sequoia) und neuer: App doppelklicken, Meldung schließen, dann
+     Systemeinstellungen > Datenschutz & Sicherheit > ganz unten "Dennoch öffnen" klicken.
+   - Ältere macOS-Versionen: Rechtsklick auf die App > "Öffnen" > "Öffnen".
+
+3. Falls Python fehlt, bietet die App den Download an. Installieren, App erneut öffnen.
+
+4. Beim ersten Start richtet sich die App 1–3 Minuten lang ein (Internet nötig).
+   Danach öffnet sich das Fenster im Browser.
+
+5. Videos hineinziehen, Titel und Zahlen eintragen, "Video schneiden" klicken.
+   Erst die Vorschau anschauen, dann "Jetzt in 1080p exportieren".
+
+Wo liegt was?
+- Projekte und fertige Videos: Filme > Healbotics Cutter > <Projekt> > export
+- Beenden: oben rechts auf "Beenden" (die App läuft sonst unsichtbar im Hintergrund weiter).
+- Wieder öffnen: App erneut doppelklicken.
+
+Tipp: iPhone-Videos per AirDrop übertragen oder in der Fotos-App mit
+"Unverändertes Original exportieren". Dann stimmen Uhrzeit und Ort automatisch.
