@@ -19,7 +19,9 @@ MIRKOMAGIC – so geht's
 Wo liegt was?
 - Projekte und fertige Videos: Filme > MirkoMagic > <Projekt> > export
 - Beenden: oben rechts auf "Beenden" (die App läuft sonst unsichtbar im Hintergrund weiter).
-- Wieder öffnen: App erneut doppelklicken.
+- Browserfenster aus Versehen geschlossen? Einfach http://127.0.0.1:8765 öffnen
+  (am besten als Lesezeichen speichern). Nach "Beenden" startet ein Doppelklick die App neu.
+- Probleme? Protokoll: Library > Application Support > MirkoMagic > server.log
 
 Tipp: iPhone-Videos per AirDrop übertragen oder in der Fotos-App mit
 "Unverändertes Original exportieren". Dann stimmen Uhrzeit und Ort automatisch.

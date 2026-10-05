@@ -1,6 +1,7 @@
 #!/bin/bash
-# MirkoMagic launcher: finds Python 3.9+, starts the local app server in the
-# background and returns. The server opens the browser window itself.
+# MirkoMagic launcher: finds Python 3.9+ and runs the local app server in the
+# foreground, so macOS keeps it alive as the app process (a backgrounded child
+# gets killed when the app's main executable exits). The server opens the browser.
 RES="$(cd "$(dirname "$0")/../Resources" && pwd)"
 SUPPORT="$HOME/Library/Application Support/MirkoMagic"
 mkdir -p "$SUPPORT"
@@ -19,5 +20,10 @@ if [ -z "$PY" ]; then
   exit 0
 fi
 
-nohup "$PY" "$RES/server.py" >"$SUPPORT/server.log" 2>&1 &
+LOG="$SUPPORT/server.log"
+"$PY" "$RES/server.py" >"$LOG" 2>&1
+if [ $? -ne 0 ]; then
+  answer=$(osascript -e 'display dialog "MirkoMagic wurde mit einem Fehler beendet.\n\nBitte die Protokolldatei an Claude schicken." buttons {"Schließen", "Protokoll zeigen"} default button "Protokoll zeigen" with title "MirkoMagic"' -e 'button returned of result' 2>/dev/null)
+  [ "$answer" = "Protokoll zeigen" ] && open -R "$LOG"
+fi
 exit 0
