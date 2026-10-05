@@ -1,8 +1,8 @@
 #!/bin/bash
-# Healbotics Cutter launcher: finds Python 3.9+, starts the local app server in the
+# MirkoMagic launcher: finds Python 3.9+, starts the local app server in the
 # background and returns. The server opens the browser window itself.
 RES="$(cd "$(dirname "$0")/../Resources" && pwd)"
-SUPPORT="$HOME/Library/Application Support/Healbotics Cutter"
+SUPPORT="$HOME/Library/Application Support/MirkoMagic"
 mkdir -p "$SUPPORT"
 
 PY=""
@@ -14,7 +14,7 @@ for p in /opt/homebrew/bin/python3 /usr/local/bin/python3 \
 done
 
 if [ -z "$PY" ]; then
-  answer=$(osascript -e 'display dialog "Healbotics Cutter braucht einmalig Python 3 (kostenlos, ca. 2 Minuten).\n\nNach der Installation die App einfach erneut öffnen." buttons {"Abbrechen", "Python herunterladen"} default button "Python herunterladen" with title "Healbotics Cutter"' -e 'button returned of result' 2>/dev/null)
+  answer=$(osascript -e 'display dialog "MirkoMagic braucht einmalig Python 3 (kostenlos, ca. 2 Minuten).\n\nNach der Installation die App einfach erneut öffnen." buttons {"Abbrechen", "Python herunterladen"} default button "Python herunterladen" with title "MirkoMagic"' -e 'button returned of result' 2>/dev/null)
   [ "$answer" = "Python herunterladen" ] && open "https://www.python.org/downloads/macos/"
   exit 0
 fi

@@ -1,4 +1,4 @@
-# Healbotics Vlog-Cutter
+# MirkoMagic – Vlog-Cutter
 
 Schneidet aus Rohmaterial eine Building-in-Public-Folge im Stil von Jack Bloomfield
 (Regeln: `STYLE_GUIDE.md`).
@@ -10,14 +10,14 @@ raw/ ──ingest──▶ inventory.json ──rough──▶ edit.json + revie
 
 ## Desktop-App für den Mac (ohne Terminal)
 
-`Healbotics-Cutter-Mac.zip` entpacken, `Healbotics Cutter.app` nach „Programme“ ziehen, öffnen.
+`MirkoMagic-Mac.zip` entpacken, `MirkoMagic.app` nach „Programme“ ziehen, öffnen.
 Videos hineinziehen, Titel und Zahlen eintragen, „Video schneiden“. Details in `app/LIES_MICH.txt`.
 
 - Die App ist ein kleiner lokaler Server mit Browser-Oberfläche (`app/server.py`, `app/ui.html`).
   Beim ersten Start legt sie eine eigene Python-Umgebung unter
-  `~/Library/Application Support/Healbotics Cutter/` an und lädt Pillow und ffmpeg (imageio-ffmpeg).
+  `~/Library/Application Support/MirkoMagic/` an und lädt Pillow und ffmpeg (imageio-ffmpeg).
   Homebrew ist nicht nötig. Transkription (faster-whisper) lädt sie erst, wenn man das Häkchen setzt.
-- Projekte und Exporte liegen in `~/Movies/Healbotics Cutter/<projekt>/export/`.
+- Projekte und Exporte liegen in `~/Movies/MirkoMagic/<projekt>/export/`.
 - Neu bauen: `python3 video-editing/app/build.py`, Ergebnis in `video-editing/dist/`.
 - Die App ist nicht von Apple signiert. Beim ersten Öffnen deshalb
   Systemeinstellungen > Datenschutz & Sicherheit > „Dennoch öffnen“ (ältere macOS-Versionen: Rechtsklick > Öffnen).

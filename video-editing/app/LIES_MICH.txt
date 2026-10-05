@@ -1,6 +1,6 @@
-HEALBOTICS CUTTER – so geht's
+MIRKOMAGIC – so geht's
 
-1. "Healbotics Cutter.app" in den Ordner "Programme" ziehen.
+1. "MirkoMagic.app" in den Ordner "Programme" ziehen.
 
 2. Beim ersten Öffnen meldet macOS, dass die App von einem unbekannten Entwickler ist.
    So öffnest du sie trotzdem (nur einmal nötig):
@@ -17,7 +17,7 @@ HEALBOTICS CUTTER – so geht's
    Erst die Vorschau anschauen, dann "Jetzt in 1080p exportieren".
 
 Wo liegt was?
-- Projekte und fertige Videos: Filme > Healbotics Cutter > <Projekt> > export
+- Projekte und fertige Videos: Filme > MirkoMagic > <Projekt> > export
 - Beenden: oben rechts auf "Beenden" (die App läuft sonst unsichtbar im Hintergrund weiter).
 - Wieder öffnen: App erneut doppelklicken.
 

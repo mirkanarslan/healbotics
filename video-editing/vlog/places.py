@@ -85,7 +85,7 @@ def online_city(latlon, lang="de"):
     q = urllib.parse.urlencode({"lat": latlon[0], "lon": latlon[1], "format": "jsonv2",
                                 "zoom": 10, "accept-language": lang})
     req = urllib.request.Request(f"https://nominatim.openstreetmap.org/reverse?{q}",
-                                 headers={"User-Agent": "healbotics-vlog-cutter/1.0"})
+                                 headers={"User-Agent": "mirkomagic/1.0"})
     with urllib.request.urlopen(req, timeout=8) as r:
         addr = json.load(r).get("address", {})
     city = addr.get("city") or addr.get("town") or addr.get("village") or addr.get("municipality")

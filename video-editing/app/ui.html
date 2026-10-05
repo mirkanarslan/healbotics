@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Healbotics Cutter</title>
+<title>MirkoMagic</title>
 <link rel="icon" href="data:,">
 <style>
   :root {
@@ -78,7 +78,7 @@
 <main>
   <header>
     <div>
-      <h1>Healbotics <span>Cutter</span></h1>
+      <h1>Mirko<span>Magic</span></h1>
       <div class="sub">Rohmaterial rein, Folge im Building-in-Public-Stil raus. Alles bleibt auf diesem Mac.</div>
     </div>
     <div class="actions">
@@ -172,7 +172,7 @@ let project = null, uploading = 0, lastResult = null, polling = null;
 
 // remember inputs between launches
 try {
-  const saved = JSON.parse(localStorage.getItem("hc-fields") || "{}");
+  const saved = JSON.parse(localStorage.getItem("mm-fields") || "{}");
   FIELDS.forEach((f) => { if (saved[f] != null) $(f).value = saved[f]; });
   ["override", "whisper", "burn"].forEach((f) => { if (saved[f] != null) $(f).checked = saved[f]; });
   project = saved.project || null;
@@ -182,7 +182,7 @@ function persist() {
     const data = { project };
     FIELDS.forEach((f) => (data[f] = $(f).value));
     ["override", "whisper", "burn"].forEach((f) => (data[f] = $(f).checked));
-    localStorage.setItem("hc-fields", JSON.stringify(data));
+    localStorage.setItem("mm-fields", JSON.stringify(data));
   } catch (e) {}
 }
 document.querySelectorAll("input,select").forEach((el) => el.addEventListener("change", persist));
@@ -294,7 +294,7 @@ $("copy").onclick = () => { navigator.clipboard.writeText($("chapters").value); 
 $("quit").onclick = async () => {
   if (jobRunning && !confirm("Es läuft gerade ein Schnitt. Trotzdem beenden?")) return;
   await api("/api/quit", {});
-  document.body.innerHTML = "<main><h1>Healbotics Cutter beendet</h1><p class='sub'>Zum Weitermachen die App erneut öffnen.</p></main>";
+  document.body.innerHTML = "<main><h1>MirkoMagic beendet</h1><p class='sub'>Zum Weitermachen die App erneut öffnen.</p></main>";
 };
 
 function render(s) {

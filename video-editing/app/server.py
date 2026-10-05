@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Healbotics Cutter: local app server (standard library only).
+"""MirkoMagic: local app server (standard library only).
 
 Serves the UI on http://127.0.0.1:<port>, takes video uploads into a project
 folder, installs the engine's dependencies once into a private virtualenv and
@@ -21,7 +21,7 @@ from datetime import date
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
-APP = "Healbotics Cutter"
+APP = "MirkoMagic"
 VERSION = "1.0"
 HERE = Path(__file__).resolve().parent
 ENGINE = HERE / "engine" if (HERE / "engine" / "vlog").is_dir() else HERE.parent  # bundled app / repo checkout
@@ -179,7 +179,7 @@ def reveal(path):
 
 
 class Handler(BaseHTTPRequestHandler):
-    server_version = f"HealboticsCutter/{VERSION}"
+    server_version = f"MirkoMagic/{VERSION}"
 
     def log_message(self, *args):
         pass

@@ -2,10 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-  <key>CFBundleName</key><string>Healbotics Cutter</string>
-  <key>CFBundleDisplayName</key><string>Healbotics Cutter</string>
-  <key>CFBundleIdentifier</key><string>com.healbotics.cutter</string>
-  <key>CFBundleExecutable</key><string>HealboticsCutter</string>
+  <key>CFBundleName</key><string>MirkoMagic</string>
+  <key>CFBundleDisplayName</key><string>MirkoMagic</string>
+  <key>CFBundleIdentifier</key><string>com.mirkomagic.app</string>
+  <key>CFBundleExecutable</key><string>MirkoMagic</string>
   <key>CFBundleIconFile</key><string>AppIcon</string>
   <key>CFBundlePackageType</key><string>APPL</string>
   <key>CFBundleShortVersionString</key><string>1.0</string>

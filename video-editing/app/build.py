@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Build the macOS app and the ZIP to hand out:  python3 video-editing/app/build.py
 
-Output: video-editing/dist/Healbotics Cutter.app and video-editing/dist/Healbotics-Cutter-Mac.zip
+Output: video-editing/dist/MirkoMagic.app and video-editing/dist/MirkoMagic-Mac.zip
 """
 import shutil
 import stat
@@ -14,8 +14,8 @@ from PIL import Image, ImageDraw
 APP_SRC = Path(__file__).resolve().parent
 ROOT = APP_SRC.parent  # video-editing/
 DIST = ROOT / "dist"
-APP = DIST / "Healbotics Cutter.app"
-ZIP = DIST / "Healbotics-Cutter-Mac.zip"
+APP = DIST / "MirkoMagic.app"
+ZIP = DIST / "MirkoMagic-Mac.zip"
 
 
 def icon(path):
@@ -39,7 +39,7 @@ def main():
     (res / "engine").mkdir(parents=True)
     macos.mkdir(parents=True)
     shutil.copy(APP_SRC / "macos" / "Info.plist", APP / "Contents" / "Info.plist")
-    exe = macos / "HealboticsCutter"
+    exe = macos / "MirkoMagic"
     shutil.copy(APP_SRC / "macos" / "launcher.sh", exe)
     exe.chmod(exe.stat().st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
     for f in ("server.py", "ui.html"):
