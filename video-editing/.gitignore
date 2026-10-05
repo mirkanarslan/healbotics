@@ -6,3 +6,7 @@ projects/*/raw/
 *.MP4
 *.mxf
 *.braw
+projects/*/inventory.json
+projects/*/geocache.json
+projects/*/music/
+__pycache__/

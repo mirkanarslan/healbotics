@@ -85,29 +85,17 @@ Gesamtauswertung zusammen: was ist in allen bzw. den meisten Videos gleich (= St
    Schrift mit ähnlichem Charakter verwenden (z. B. aus Google Fonts, Lizenz prüfen) und unter
    `video-editing/fonts/` ablegen.
 
-## Schritt 4: Schnittprogramm fertig bauen
+## Schritt 4: Schnittprogramm prüfen und an die Messungen anpassen
 
-`render.py` bleibt der Renderer. Dazu kommt ein Assistent-Workflow, der aus Rohmaterial eine `edit.json` baut:
-
-1. `ingest.py <projektordner>`: listet alle Dateien in `raw/`, liest Aufnahmezeit
-   (`creation_time`, bei iPhone auch `com.apple.quicktime.creationdate`) und GPS
-   (`com.apple.quicktime.location.ISO6709`), macht daraus Orts- und Uhrzeit-Vorschläge
-   (Stadt per Reverse-Geocoding nur, wenn der Host erreichbar ist, sonst nachfragen), transkribiert
-   mit faster-whisper (Sprache automatisch, DE/EN) und schreibt `inventory.json`.
-   Falls das Whisper-Modell nicht geladen werden kann: sagen, welcher Host fehlt.
-2. `rough_cut.py`: entfernt Stille und Versprecher aus Talking-Head-Clips (Wortzeitstempel), schlägt
-   B-Roll-Stellen vor, erzeugt eine erste `edit.json` nach der Story-Vorlage aus dem Style Guide,
-   mit Ortskarte bei jedem Ortswechsel und Uhrzeit an Tagesabschnitten.
-3. `render.py` erweitern um: Überblendungen und J/L-Cuts wo der Style Guide sie vorsieht,
-   Musik-Ducking (existiert), Kapitelmarken als Textdatei für die YouTube-Beschreibung, optional
-   Untertitel (SRT), Export 1080p und 4K, Vorschau-Render in niedriger Qualität (`--preview`).
-4. Build-in-Public-Elemente: `stat`-Karten mit Werten aus einer `project.json` (Tag-Nummer,
-   Kunden, Umsatz, Meilensteine), damit ich sie pro Folge nur aktualisiere.
+Das Schnittprogramm ist fertig (`cut.py` mit `ingest`, `rough`, `render`; Doku in `README.md`).
+Nicht neu bauen. Nur die Ergebnisse aus Schritt 2 und 3 einarbeiten:
+- Schnittlängen, Montage-Länge und B-Roll-Frequenz als Standardwerte in `vlog/roughcut.py` (`DEFAULTS`).
+- Typografie und Positionen der Einblendungen in `vlog/render.py` (`overlay_filters`).
+- Neue LUTs bzw. Looks in `grades.json`.
 
 ## Schritt 5: Testen
 
-- Ein Testprojekt mit synthetischen Clips (ffmpeg `testsrc2`, Sprachaufnahme per TTS oder Sinuston,
-  gesetzte `creation_time`- und GPS-Metadaten) komplett durch `ingest.py` → `rough_cut.py` → `render.py`.
+- `python3 video-editing/tests/test_pipeline.py` muss mit „ALLES OK“ enden.
 - Frames an den Einblendungen extrahieren und ansehen. Dauer, Tonspur (48 kHz, -14 LUFS) und
   Auflösung prüfen.
 - Ein kurzes Vorher/Nachher (Referenz-Frame vs. unser Grade auf ähnlichem Motiv) als Bildvergleich

@@ -20,15 +20,18 @@ Wir übernehmen den Schnittstil als Vorlage (Look, Tempo, Story-Aufbau, Einblend
 eigenem Material, eigener Musik und eigenen Grafiken. Keine Clips, Musik oder Grafiken aus den
 Referenzvideos verwenden.
 
-Ablauf pro Video:
-1. Rohmaterial nach `video-editing/projects/<datum>-<titel>/raw/` legen (gitignored, zu groß für Git).
-   Große Dateien am besten per Google-Drive-Link teilen.
-2. Material sichten (Transkript, Orte, Uhrzeiten aus den Metadaten `creation_time`), dann eine
-   Story nach `STYLE_GUIDE.md` bauen: Hook, Kontext, Stationen mit Orts- und Zeitkarten, Stand/Zahlen,
-   Cliffhanger/Ausblick.
-3. Den Schnitt als `edit.json` (EDL) im Projektordner festhalten, Format siehe `video-editing/projects/example/edit.json`.
-4. Rendern: `python3 video-editing/render.py video-editing/projects/<name>/edit.json`
-   (braucht ein ffmpeg mit `drawtext`, z. B. `apt-get install ffmpeg`).
-5. Export liegt in `video-editing/exports/` (gitignored). Stichproben-Frames prüfen, bevor er rausgeht.
+Werkzeug: `video-editing/cut.py` (Anleitung und alle Felder in `video-editing/README.md`).
 
-Farb-Presets stehen in `video-editing/grades.json`. Neue Looks dort ergänzen, nicht im Skript.
+Ablauf pro Folge:
+1. `python3 video-editing/cut.py new "<titel>"`, Rohmaterial (iPhone-Originale mit Zeit und GPS) nach
+   `projects/<datum>-<titel>/raw/`, Musik nach `music/`, Zahlen/Orte/Hook in `project.json`.
+   Rohmaterial, Musik und Exporte sind gitignored.
+2. `cut.py ingest <projekt>`: Zeit, GPS, Stadt, Sprechpausen, Transkript (faster-whisper, falls installiert).
+3. `cut.py rough <projekt>`: Rohschnitt nach `STYLE_GUIDE.md` als `edit.json` plus `review.md`.
+   `review.md` mit dem User durchgehen. Änderungen direkt in `edit.json` machen, danach nicht erneut `rough`
+   laufen lassen (überschreibt `edit.json`).
+4. `cut.py render <projekt> --preview`, Frames prüfen, dann `cut.py render <projekt>` (oder `--4k`).
+   Ergebnis in `video-editing/exports/`: MP4, `_chapters.txt` für die YouTube-Beschreibung, `.srt`.
+
+Vor Änderungen am Tool: `python3 video-editing/tests/test_pipeline.py` muss mit „ALLES OK“ enden.
+Farb-Presets stehen in `video-editing/grades.json`. Neue Looks dort ergänzen, nicht im Code.
